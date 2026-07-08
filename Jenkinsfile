@@ -2,27 +2,24 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                sh 'echo Building application...'
+                dir('calculator-app') {
+                    sh 'mvn clean package'
+                }
             }
         }
 
-        stage('Test') {
+        stage('Archive Artifact') {
             steps {
-                sh 'echo Running tests...'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'echo Deployment successful.'
+                archiveArtifacts artifacts: 'calculator-app/target/*.jar', fingerprint: true
             }
         }
     }
