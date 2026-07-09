@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -11,7 +12,7 @@ pipeline {
         stage('Build & Test') {
             steps {
                 dir('calculator-app') {
-                    sh 'mvn clean test package'
+                    sh 'mvn clean verify'
                 }
             }
         }
@@ -26,6 +27,12 @@ pipeline {
     post {
         always {
             junit 'calculator-app/target/surefire-reports/*.xml'
+
+            jacoco(
+                execPattern: 'calculator-app/target/jacoco.exec',
+                classPattern: 'calculator-app/target/classes',
+                sourcePattern: 'calculator-app/src/main/java'
+            )
         }
     }
 }
