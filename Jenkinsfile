@@ -2,17 +2,16 @@ pipeline {
     agent any
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Build & Test') {
             steps {
                 dir('calculator-app') {
-                    sh 'mvn clean package'
+                    sh 'mvn clean test package'
                 }
             }
         }
@@ -21,6 +20,12 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'calculator-app/target/*.jar', fingerprint: true
             }
+        }
+    }
+
+    post {
+        always {
+            junit 'calculator-app/target/surefire-reports/*.xml'
         }
     }
 }
